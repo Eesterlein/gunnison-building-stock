@@ -1,0 +1,924 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gunnison County Building Stock</title>
+<meta name="description" content="An analysis of 18,312 county assessor building records: property mix, construction era, and housing character across Gunnison County, Colorado.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* ============ TOKENS ============ */
+  :root{
+    color-scheme: light;
+    --page:        #f4f2eb;
+    --surface:     #fdfcf9;
+    --surface-2:   #ffffff;
+    --ink:         #1a1912;
+    --ink-2:       #57534a;
+    --muted:       #8a8578;
+    --border:      rgba(26,25,18,0.11);
+    --border-2:    rgba(26,25,18,0.07);
+    --grid:        #e6e2d6;
+    --shadow:      0 1px 2px rgba(26,25,18,0.04), 0 8px 24px -12px rgba(26,25,18,0.16);
+
+    --accent:      #2a78d6;  /* blue   - sky / primary */
+    --accent-ink:  #184f95;
+    --accent-2:    #eb6834;  /* orange - aspen gold */
+    --accent-3:    #1baf7a;  /* aqua   - alpine lake */
+    --accent-4:    #eda100;  /* yellow */
+    --accent-5:    #e87ba4;  /* magenta */
+    --accent-6:    #008300;  /* green */
+    --accent-7:    #4a3aa7;  /* violet */
+    --accent-8:    #e34948;  /* red */
+
+    --seq-100: #cde2fb; --seq-150:#b7d3f6; --seq-200:#9ec5f4; --seq-250:#86b6ef;
+    --seq-300: #6da7ec; --seq-350:#5598e7; --seq-400:#3987e5; --seq-450:#2a78d6;
+    --seq-500: #256abf; --seq-550:#1c5cab; --seq-600:#184f95; --seq-650:#104281; --seq-700:#0d366b;
+
+    --or-100:#fbe0d2; --or-200:#f7c1a8; --or-300:#f3a37e; --or-400:#ee8352; --or-500:#eb6834; --or-600:#c14e21; --or-700:#8f3a19;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --page:      #100f0c;
+      --surface:   #17160f;
+      --surface-2: #1e1c15;
+      --ink:       #f6f4ec;
+      --ink-2:     #c8c3b3;
+      --muted:     #948f7f;
+      --border:    rgba(255,255,255,0.11);
+      --border-2:  rgba(255,255,255,0.07);
+      --grid:      #302d22;
+      --shadow:    0 1px 2px rgba(0,0,0,0.3), 0 12px 28px -14px rgba(0,0,0,0.6);
+
+      --accent:    #3987e5;
+      --accent-ink:#cde2fb;
+      --accent-2:  #d95926;
+      --accent-3:  #199e70;
+      --accent-4:  #c98500;
+      --accent-5:  #d55181;
+      --accent-6:  #1fae1f;
+      --accent-7:  #9085e9;
+      --accent-8:  #e66767;
+
+      --seq-100:#132238; --seq-150:#152a45; --seq-200:#173252; --seq-250:#1a3c62;
+      --seq-300:#1d4574; --seq-350:#204f86; --seq-400:#2a63a3; --seq-450:#3987e5;
+      --seq-500:#5b9be9; --seq-550:#7cafee; --seq-600:#9ec5f4; --seq-650:#bcd8f8; --seq-700:#dcecfc;
+
+      --or-100:#3a2013; --or-200:#5a2f16; --or-300:#7d3d18; --or-400:#a24a1a; --or-500:#d95926; --or-600:#e8825a; --or-700:#f3ac91;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --page:      #100f0c;
+    --surface:   #17160f;
+    --surface-2: #1e1c15;
+    --ink:       #f6f4ec;
+    --ink-2:     #c8c3b3;
+    --muted:     #948f7f;
+    --border:    rgba(255,255,255,0.11);
+    --border-2:  rgba(255,255,255,0.07);
+    --grid:      #302d22;
+    --shadow:    0 1px 2px rgba(0,0,0,0.3), 0 12px 28px -14px rgba(0,0,0,0.6);
+
+    --accent:    #3987e5;
+    --accent-ink:#cde2fb;
+    --accent-2:  #d95926;
+    --accent-3:  #199e70;
+    --accent-4:  #c98500;
+    --accent-5:  #d55181;
+    --accent-6:  #1fae1f;
+    --accent-7:  #9085e9;
+    --accent-8:  #e66767;
+
+    --seq-100:#132238; --seq-150:#152a45; --seq-200:#173252; --seq-250:#1a3c62;
+    --seq-300:#1d4574; --seq-350:#204f86; --seq-400:#2a63a3; --seq-450:#3987e5;
+    --seq-500:#5b9be9; --seq-550:#7cafee; --seq-600:#9ec5f4; --seq-650:#bcd8f8; --seq-700:#dcecfc;
+
+    --or-100:#3a2013; --or-200:#5a2f16; --or-300:#7d3d18; --or-400:#a24a1a; --or-500:#d95926; --or-600:#e8825a; --or-700:#f3ac91;
+  }
+
+  /* ============ RESET / BASE ============ */
+  *{box-sizing:border-box;}
+  body{
+    background:var(--page);
+    color:var(--ink);
+    font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{text-wrap:balance; margin:0;}
+  p{margin:0;}
+  .num{font-variant-numeric:tabular-nums;}
+  ::selection{background:var(--accent); color:#fff;}
+
+  /* ============ LAYOUT SHELL ============ */
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px 80px;}
+
+  .masthead{
+    padding:56px 28px 40px;
+    border-bottom:1px solid var(--border);
+    background:
+      radial-gradient(1100px 420px at 12% -10%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 60%),
+      radial-gradient(900px 360px at 92% -20%, color-mix(in srgb, var(--accent-2) 9%, transparent), transparent 55%);
+  }
+  .masthead-inner{max-width:1180px; margin:0 auto;}
+  .eyebrow{
+    display:flex; align-items:center; gap:10px;
+    font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--muted); margin-bottom:18px;
+  }
+  .eyebrow .dot{width:6px; height:6px; border-radius:50%; background:var(--accent-2);}
+  h1.title{
+    font-size:clamp(32px,4.4vw,50px); font-weight:800; letter-spacing:-0.02em; line-height:1.05;
+    max-width:16ch;
+  }
+  .dek{
+    margin-top:16px; font-size:17px; line-height:1.6; color:var(--ink-2); max-width:62ch;
+    font-weight:400;
+  }
+  .dek b{color:var(--ink); font-weight:600;}
+
+  /* ============ KPI ROW ============ */
+  .kpis{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+    background:var(--border); border:1px solid var(--border);
+    border-radius:14px; overflow:hidden; margin-top:34px;
+    box-shadow:var(--shadow);
+  }
+  .kpi{background:var(--surface-2); padding:20px 22px;}
+  .kpi-label{font-size:12.5px; color:var(--muted); font-weight:600; letter-spacing:.02em;}
+  .kpi-value{
+    font-family:"IBM Plex Mono",monospace; font-weight:600;
+    font-size:clamp(22px,2.6vw,30px); margin-top:8px; color:var(--ink); letter-spacing:-0.01em;
+  }
+  .kpi-sub{font-size:12.5px; color:var(--ink-2); margin-top:6px; line-height:1.4;}
+
+  /* ============ SECTIONS ============ */
+  section.block{padding-top:56px;}
+  .block-head{max-width:70ch; margin-bottom:22px;}
+  .block-head .tag{
+    font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--accent); font-weight:600; margin-bottom:8px; display:block;
+  }
+  .block-head h2{font-size:23px; font-weight:700; letter-spacing:-0.01em;}
+  .block-head p{margin-top:8px; font-size:14.5px; color:var(--ink-2); line-height:1.6;}
+
+  .panel{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:14px;
+    padding:24px 26px 20px; box-shadow:var(--shadow);
+  }
+  .panel-title{font-size:14px; font-weight:700; color:var(--ink);}
+  .panel-note{font-size:12.5px; color:var(--muted); margin-top:2px;}
+
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+  .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  @media (max-width:860px){ .grid-2, .grid-3, .kpis{grid-template-columns:1fr;} }
+
+  .callout{
+    margin-top:16px; padding:14px 16px; border-radius:10px;
+    background:color-mix(in srgb, var(--accent-2) 9%, var(--surface));
+    border:1px solid color-mix(in srgb, var(--accent-2) 24%, var(--border));
+    font-size:13.5px; line-height:1.55; color:var(--ink-2);
+  }
+  .callout b{color:var(--ink);}
+
+  /* ============ LEGEND ============ */
+  .legend{display:flex; flex-wrap:wrap; gap:14px 20px; margin-top:14px;}
+  .legend-item{display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--ink-2); font-weight:500;}
+  .legend-swatch{width:10px; height:10px; border-radius:3px; flex:none;}
+
+  /* ============ SVG CHART BASICS ============ */
+  svg.chart{width:100%; height:auto; display:block; overflow:visible;}
+  .axis-line{stroke:var(--grid); stroke-width:1;}
+  .axis-label{fill:var(--muted); font-size:10.5px; font-family:"IBM Plex Mono",monospace;}
+  .value-label{fill:var(--ink-2); font-size:10.5px; font-family:"IBM Plex Mono",monospace; font-weight:500;}
+  .cat-label{fill:var(--ink-2); font-size:11px; font-family:"Public Sans",sans-serif; font-weight:500;}
+  .bar{cursor:pointer; transition:opacity .12s ease;}
+  .bar:hover{opacity:0.82;}
+  .fill-accent{fill:var(--accent);}
+  .fill-accent-2{fill:var(--accent-2);}
+  .fill-accent-3{fill:var(--accent-3);}
+  .fill-accent-4{fill:var(--accent-4);}
+  .fill-accent-5{fill:var(--accent-5);}
+  .fill-accent-6{fill:var(--accent-6);}
+  .stroke-accent{stroke:var(--accent);}
+
+  /* tooltip */
+  #tt{
+    position:fixed; pointer-events:none; z-index:60; opacity:0; transform:translate(-50%,-100%);
+    background:var(--ink); color:var(--page); border-radius:8px; padding:8px 11px; font-size:12.5px;
+    line-height:1.45; box-shadow:0 8px 20px -6px rgba(0,0,0,0.4); max-width:230px; transition:opacity .08s ease;
+  }
+  #tt .tt-title{font-weight:700; margin-bottom:2px;}
+  #tt .tt-row{display:flex; justify-content:space-between; gap:12px; font-family:"IBM Plex Mono",monospace; font-size:11.5px;}
+
+  /* ============ TABLE ============ */
+  .table-scroll{overflow-x:auto;}
+  table.profile{width:100%; border-collapse:collapse; font-size:13.5px; min-width:640px;}
+  table.profile th{
+    text-align:right; font-weight:600; color:var(--muted); font-size:11px; letter-spacing:.03em; text-transform:uppercase;
+    padding:0 10px 10px; border-bottom:1px solid var(--border);
+  }
+  table.profile th:first-child, table.profile td:first-child{text-align:left;}
+  table.profile td{
+    padding:12px 10px; border-bottom:1px solid var(--border-2); text-align:right;
+    font-family:"IBM Plex Mono",monospace; color:var(--ink-2);
+  }
+  table.profile td:first-child{font-family:"Public Sans",sans-serif; color:var(--ink); font-weight:600;}
+  table.profile tr:last-child td{border-bottom:none;}
+  table.profile .swatch{display:inline-block; width:9px; height:9px; border-radius:2.5px; margin-right:8px;}
+  table.profile tfoot td{border-top:1.5px solid var(--border); border-bottom:none; font-weight:700; color:var(--ink); padding-top:13px;}
+
+  /* ============ FOOTER ============ */
+  footer{
+    margin-top:64px; padding-top:26px; border-top:1px solid var(--border);
+    font-size:12.5px; color:var(--muted); line-height:1.7;
+  }
+  footer b{color:var(--ink-2);}
+
+  @media (prefers-reduced-motion: reduce){ *{transition:none !important; animation:none !important;} }
+</style>
+</head>
+<body>
+
+<div id="tt"></div>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="eyebrow"><span class="dot"></span>GUNNISON COUNTY, COLORADO &nbsp;·&nbsp; ASSESSOR BUILDING RECORDS</div>
+    <h1 class="title">The Shape of Gunnison County's Building Stock</h1>
+    <p class="dek">A read of <b>18,312 building records</b> from the county assessor's parcel database &mdash; what got built, when, how big, and how it's graded. High-country home to Crested Butte Mountain Resort and Western Colorado University, the county's building stock still carries the fingerprints of a late-century development boom.</p>
+
+    <div class="kpis">
+      <div class="kpi">
+        <div class="kpi-label">Buildings on record</div>
+        <div class="kpi-value num">18,312</div>
+        <div class="kpi-sub">Across 6 property classes, countywide</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Total above-grade area</div>
+        <div class="kpi-value num">29.2M <span style="font-size:15px; color:var(--muted); font-weight:500;">sq ft</span></div>
+        <div class="kpi-sub">Averaging 1,597 sq ft per building</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Built since 1970</div>
+        <div class="kpi-value num">69.7%</div>
+        <div class="kpi-sub">Of all buildings with a known year</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Peak construction decade</div>
+        <div class="kpi-value num">1970s</div>
+        <div class="kpi-sub">2,715 buildings &mdash; the single busiest decade</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ============ DECADE TIMELINE ============ -->
+  <section class="block" id="sec-decades">
+    <div class="block-head">
+      <span class="tag">01 &nbsp;Construction era</span>
+      <h2>When Gunnison County Was Built</h2>
+      <p>Original year of construction, grouped by decade, for all 18,312 buildings on record. A thin pre&#8209;1900 base of mining&#8209;era structures gives way to a sustained, decades&#8209;long building boom.</p>
+    </div>
+    <div class="panel">
+      <svg class="chart" id="chart-decades" viewBox="0 0 1080 340" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="callout">
+        <b>Thirty years, one boom.</b> The 1970s&ndash;1990s alone added 7,606 buildings &mdash; more than the previous 120 years combined (3,416). That stretch tracks with the opening and build-out era of Crested Butte Mountain Resort and a broader Western Slope growth wave. Construction has cooled since 2010: the 2010s and 2020s-to-date total 2,473 buildings, on pace with the 1980s alone.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROPERTY MIX ============ -->
+  <section class="block" id="sec-mix">
+    <div class="block-head">
+      <span class="tag">02 &nbsp;Property mix</span>
+      <h2>Six Classes of Building, Two Different Shares</h2>
+      <p>Share of building <em>count</em> versus share of total <em>floor area</em>, by property type. The two rankings don't match &mdash; a sign of how unevenly building size is distributed across classes.</p>
+    </div>
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-title">Share of buildings</div>
+        <div class="panel-note">By count &middot; n = 18,312</div>
+        <svg class="chart" id="chart-mix-count" viewBox="0 0 520 300" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Share of floor area</div>
+        <div class="panel-note">By above-grade sq ft &middot; 29.2M sq ft total</div>
+        <svg class="chart" id="chart-mix-area" viewBox="0 0 520 300" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+    </div>
+    <div class="callout">
+      <b>Commercial punches above its weight.</b> Commercial buildings are just 11.0% of the county's structures but 16.9% of its total floor area &mdash; the largest average footprint of any class at 2,450 sq ft. Condos run the opposite way: 15.2% of buildings hold only 9.0% of the square footage, averaging a compact 948 sq ft.
+    </div>
+  </section>
+
+  <!-- ============ AVG SIZE TREND ============ -->
+  <section class="block" id="sec-size">
+    <div class="block-head">
+      <span class="tag">03 &nbsp;Building size</span>
+      <h2>Homes Have Grown</h2>
+      <p>Average above-grade square footage of buildings, by decade of construction (pre-1900 through the 2020s-to-date).</p>
+    </div>
+    <div class="panel">
+      <svg class="chart" id="chart-size-trend" viewBox="0 0 1080 300" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="callout">
+        Buildings built in the 2020s average <b>1,969 sq ft</b> &mdash; <b>32% larger</b> than the 1,491 sq ft typical of the 1980s, and the largest of any decade on record. Average size held roughly flat between 1900 and 1960 (1,150&ndash;1,400 sq ft) before climbing steadily from the 1980s on.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ QUALITY / CONDITION ============ -->
+  <section class="block" id="sec-quality">
+    <div class="block-head">
+      <span class="tag">04 &nbsp;Assessor grades</span>
+      <h2>Construction Quality &amp; Condition</h2>
+      <p>Two ordinal grades the assessor assigns to every building: <em>construction quality</em> (the grade of materials and workmanship as built) and <em>condition</em> (current physical state). Bars run low &rarr; high.</p>
+    </div>
+    <div class="grid-2">
+      <div class="panel">
+        <div class="panel-title">Construction quality</div>
+        <div class="panel-note">13 grades, Poor to Excellent</div>
+        <svg class="chart" id="chart-quality" viewBox="0 0 520 340" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Condition</div>
+        <div class="panel-note">Current physical state on record</div>
+        <svg class="chart" id="chart-condition" viewBox="0 0 520 340" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+    </div>
+    <div class="callout">
+      Quality grades split into two clusters &mdash; <b>Average</b> (31.4%) and <b>Fair</b> (29.5%) together account for 61% of all buildings &mdash; while condition is far more consolidated: <b>68.9%</b> of buildings are graded plain <b>Average</b> condition, with well-kept (Good/Excellent/Very Good) outnumbering deteriorated (Below Average/Minimum/Poor/Salvage) grades by roughly 2 to 1.
+    </div>
+  </section>
+
+  <!-- ============ BED / BATH ============ -->
+  <section class="block" id="sec-bedbath">
+    <div class="block-head">
+      <span class="tag">05 &nbsp;Residential rooms</span>
+      <h2>Bedrooms &amp; Bathrooms</h2>
+      <p>Distribution of bedroom and bathroom counts for the 10,997 buildings on the Residential property roll.</p>
+    </div>
+    <div class="panel">
+      <svg class="chart" id="chart-bedbath" viewBox="0 0 1080 300" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="legend" id="legend-bedbath"></div>
+    </div>
+  </section>
+
+  <!-- ============ OCCUPANCY ============ -->
+  <section class="block" id="sec-occupancy">
+    <div class="block-head">
+      <span class="tag">06 &nbsp;Use &amp; occupancy</span>
+      <h2>What Gets Built</h2>
+      <p>The assessor's occupancy field tags each building with a specific use or house style &mdash; 385 distinct tags in all. The top 12 account for 68% of every building in the county.</p>
+    </div>
+    <div class="panel">
+      <svg class="chart" id="chart-occupancy" viewBox="0 0 1080 420" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="callout">
+        <b>A resort county's seasonal signature.</b> Alongside 5,639 &ldquo;Conventional&rdquo; single-family homes, the assessor separately tags 688 as <b>Summer SFR</b> &mdash; seasonal, warm&#8209;months&#8209;only residences &mdash; plus 415 Cabins, 431 Ranches and 593 Log Homes, a house-style mix that reads distinctly mountain-resort. Only 13.3% of all buildings show any recorded finished-basement improvement (egress window, walkout, etc.), consistent with slab- and crawlspace-style constrution common at altitude.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROFILE TABLE ============ -->
+  <section class="block" id="sec-table">
+    <div class="block-head">
+      <span class="tag">07 &nbsp;Summary</span>
+      <h2>Property Type Profile</h2>
+      <p>Every class side by side &mdash; count, footprint, and average room counts.</p>
+    </div>
+    <div class="panel">
+      <div class="table-scroll">
+        <table class="profile" id="profile-table">
+          <thead>
+            <tr>
+              <th>Property type</th>
+              <th>Buildings</th>
+              <th>Share</th>
+              <th>Total floor area</th>
+              <th>Avg. size</th>
+              <th>Avg. beds</th>
+              <th>Avg. baths</th>
+              <th>Avg. stories</th>
+              <th>Avg. year built</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+          <tfoot>
+            <tr>
+              <td>All classes</td>
+              <td class="num">18,312</td>
+              <td class="num">100%</td>
+              <td class="num">29,241,174</td>
+              <td class="num">1,597</td>
+              <td class="num">&mdash;</td>
+              <td class="num">&mdash;</td>
+              <td class="num">&mdash;</td>
+              <td class="num">&mdash;</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p><b>Source:</b> Gunnison County Assessor building-attribute records, file <i>&ldquo;Building Attributes 8.3.26&rdquo;</i> (n = 18,312 building-level records). Compiled and analyzed for this report.</p>
+    <p style="margin-top:6px;"><b>Notes on method:</b> &ldquo;Decade built&rdquo; uses original year of construction; 2,134 records (11.7%) have no recorded year and are shown as Unknown in the decade chart. Bedroom, bathroom, and average-year figures for the Residential class exclude records with no value recorded. Occupancy tags are assigned by the assessor and are not mutually exclusive with property type. Percentages are rounded and may not sum exactly to 100%.</p>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+
+  /* ---------------------------------------------------------------
+     DATA
+  --------------------------------------------------------------- */
+
+  var decades = [
+    {label:"Pre-1900", n:548},
+    {label:"1900s", n:222},
+    {label:"1910s", n:169},
+    {label:"1920s", n:273},
+    {label:"1930s", n:329},
+    {label:"1940s", n:380},
+    {label:"1950s", n:597},
+    {label:"1960s", n:898},
+    {label:"1970s", n:2715},
+    {label:"1980s", n:2198},
+    {label:"1990s", n:2693},
+    {label:"2000s", n:2683},
+    {label:"2010s", n:1438},
+    {label:"2020s", n:1035},
+    {label:"Unknown", n:2134}
+  ];
+
+  var sizeTrend = [
+    {label:"Pre-1900", v:1596},
+    {label:"1900s", v:1286},
+    {label:"1910s", v:1619},
+    {label:"1920s", v:1262},
+    {label:"1930s", v:1148},
+    {label:"1940s", v:1169},
+    {label:"1950s", v:1292},
+    {label:"1960s", v:1377},
+    {label:"1970s", v:1392},
+    {label:"1980s", v:1491},
+    {label:"1990s", v:1805},
+    {label:"2000s", v:1839},
+    {label:"2010s", v:1754},
+    {label:"2020s", v:1969}
+  ];
+
+  var propTypes = [
+    {label:"Residential",  count:10997, area:19115128, avgSize:1738, beds:3, baths:2, stories:2, year:1983, cls:"fill-accent"},
+    {label:"Condo",        count:2790,  area:2643894,  avgSize:948,  beds:2, baths:2, stories:2, year:1985, cls:"fill-accent-2"},
+    {label:"Commercial",   count:2012,  area:4928995,  avgSize:2450, beds:2, baths:2, stories:1, year:1978, cls:"fill-accent-3"},
+    {label:"Out Building", count:1544,  area:1601592,  avgSize:1037, beds:2, baths:1, stories:1, year:1975, cls:"fill-accent-4"},
+    {label:"Mobile Home",  count:954,   area:951365,   avgSize:997,  beds:3, baths:2, stories:1, year:1984, cls:"fill-accent-5"},
+    {label:"Vacant",       count:15,    area:200,      avgSize:13,   beds:null, baths:null, stories:1, year:2022, cls:"fill-accent-6"}
+  ];
+
+  var qualityDist = [
+    {label:"Poor", n:143},{label:"Low", n:1925},{label:"Low Plus", n:78},
+    {label:"Fair", n:5402},{label:"Fair Plus", n:1188},
+    {label:"Average", n:5752},{label:"Average Plus", n:717},
+    {label:"Good", n:1847},{label:"Good Plus", n:328},
+    {label:"Very Good", n:766},{label:"Very Good Plus", n:72},
+    {label:"Excellent", n:64},{label:"Unrecorded", n:30}
+  ];
+
+  var conditionDist = [
+    {label:"Salvage", n:83},{label:"Minimum", n:208},{label:"Below Avg", n:1261},
+    {label:"Average", n:12610},{label:"Good", n:1905},{label:"Very Good", n:684},
+    {label:"Excellent", n:1514},{label:"Other/NA", n:47}
+  ];
+
+  var bedrooms = [
+    {label:"0", n:1171},{label:"1", n:1171},{label:"2", n:2490},{label:"3", n:3806},
+    {label:"4", n:1747},{label:"5", n:417},{label:"6+", n:214},{label:"N/A", n:1111}
+  ];
+  // note: "0" bucket unused (bedroom counts start at 1); replaced below
+  bedrooms = [
+    {label:"1", n:1171},{label:"2", n:2490},{label:"3", n:3806},
+    {label:"4", n:1747},{label:"5", n:417},{label:"6+", n:214},{label:"Unrec.", n:1111}
+  ];
+  var bathrooms = [
+    {label:"1", n:2639},{label:"2", n:3445},{label:"3", n:2210},
+    {label:"4", n:974},{label:"5", n:436},{label:"6+", n:348},{label:"Unrec.", n:945}
+  ];
+
+  var occupancy = [
+    {label:"Single Family: Conventional", n:5639},
+    {label:"Condominium unit", n:2762},
+    {label:"Single Family: Townhouse", n:831},
+    {label:"Single Family: Summer SFR", n:688, highlight:true},
+    {label:"Farm Utility Building", n:597},
+    {label:"Single Family: Log Home", n:593},
+    {label:"Single Family: Ranch", n:431},
+    {label:"Single Family: Cabin", n:415, highlight:true},
+    {label:"Guest Cottage", n:357},
+    {label:"Shed — Livestock", n:351},
+    {label:"Single Family: Modular", n:257},
+    {label:"Accessory Dwelling Unit", n:523}
+  ];
+
+  var fmt = new Intl.NumberFormat("en-US");
+  function comma(n){ return fmt.format(Math.round(n)); }
+  function pct(n,total,d){ d = d===undefined?1:d; return (100*n/total).toFixed(d)+"%"; }
+
+  /* ---------------------------------------------------------------
+     TOOLTIP
+  --------------------------------------------------------------- */
+  var tt = document.getElementById("tt");
+  function showTT(evt, title, rows){
+    var html = '<div class="tt-title">'+title+'</div>';
+    rows.forEach(function(r){
+      html += '<div class="tt-row"><span>'+r[0]+'</span><span>'+r[1]+'</span></div>';
+    });
+    tt.innerHTML = html;
+    tt.style.opacity = 1;
+    moveTT(evt);
+  }
+  function moveTT(evt){
+    tt.style.left = evt.clientX + "px";
+    tt.style.top = (evt.clientY - 12) + "px";
+  }
+  function hideTT(){ tt.style.opacity = 0; }
+
+  var SVGNS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs){
+    var e = document.createElementNS(SVGNS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  /* ---------------------------------------------------------------
+     VERTICAL BAR CHART (single series)
+  --------------------------------------------------------------- */
+  function renderColumnChart(svgId, data, opts){
+    var svg = document.getElementById(svgId);
+    var vb = svg.viewBox.baseVal;
+    var W = vb.width, H = vb.height;
+    opts = opts || {};
+    var margin = {top:14, right:10, bottom: opts.labelRotate ? 54 : 30, left:44};
+    var innerW = W - margin.left - margin.right;
+    var innerH = H - margin.top - margin.bottom;
+    var maxV = opts.max || Math.max.apply(null, data.map(function(d){return d.n;}));
+    var niceMax = niceCeiling(maxV);
+    var n = data.length;
+    var slot = innerW / n;
+    var barW = Math.min(opts.maxBarW || 28, slot * 0.62);
+
+    // gridlines + y ticks
+    var ticks = 4;
+    for (var i=0;i<=ticks;i++){
+      var v = niceMax * i / ticks;
+      var y = margin.top + innerH - (v/niceMax)*innerH;
+      svg.appendChild(el("line", {x1:margin.left, x2:margin.left+innerW, y1:y, y2:y, class:"axis-line"}));
+      var lab = el("text", {x:margin.left-8, y:y+3, class:"axis-label", "text-anchor":"end"});
+      lab.textContent = compact(v);
+      svg.appendChild(lab);
+    }
+
+    data.forEach(function(d,i){
+      var cx = margin.left + slot*i + slot/2;
+      var h = (d.n/niceMax)*innerH;
+      var y = margin.top + innerH - h;
+      var rect = el("rect", {
+        x:cx-barW/2, y:y, width:barW, height:Math.max(h,1.5), rx:4, ry:4,
+        class:"bar " + (d.cls || opts.cls || "fill-accent")
+      });
+      svg.appendChild(rect);
+      // square the baseline corners: overlay a small square patch at bottom
+      if (h > 4){
+        svg.appendChild(el("rect", {x:cx-barW/2, y:margin.top+innerH-4, width:barW, height:4, "data-basepatch":i, class:(d.cls||opts.cls||"fill-accent")}));
+      }
+      rect.addEventListener("mouseenter", function(evt){
+        showTT(evt, d.label, [[opts.valueLabel||"Count", comma(d.n) + (opts.suffix||"")]]);
+        rect.style.opacity = 0.82;
+      });
+      rect.addEventListener("mousemove", moveTT);
+      rect.addEventListener("mouseleave", function(){ hideTT(); rect.style.opacity=1; });
+
+      var lx = cx, ly = margin.top+innerH+16;
+      var catlab = el("text", {x:lx, y:ly, class:"cat-label", "text-anchor": opts.labelRotate ? "end":"middle"});
+      catlab.textContent = d.label;
+      if (opts.labelRotate){
+        catlab.setAttribute("transform", "rotate(-38 "+lx+" "+ly+")");
+      }
+      svg.appendChild(catlab);
+
+      if (opts.directLabel && (opts.directLabel==="all" || i===n-1 || d.n===maxV)){
+        var vlab = el("text", {x:cx, y:y-6, class:"value-label", "text-anchor":"middle"});
+        vlab.textContent = compact(d.n);
+        svg.appendChild(vlab);
+      }
+    });
+  }
+
+  function niceCeiling(v){
+    var mag = Math.pow(10, Math.floor(Math.log10(v)));
+    var norm = v / mag;
+    var n = norm<=1?1:norm<=2?2:norm<=2.5?2.5:norm<=5?5:10;
+    return n*mag;
+  }
+  function compact(v){
+    v = Math.round(v);
+    if (Math.abs(v) >= 1000000) return (v/1000000).toFixed(v%1000000===0?0:1)+"M";
+    if (Math.abs(v) >= 1000) return (v/1000).toFixed(v%1000===0?0:1)+"K";
+    return comma(v);
+  }
+
+  /* ---------------------------------------------------------------
+     HORIZONTAL BAR CHART (single or ranked series)
+  --------------------------------------------------------------- */
+  function renderHBarChart(svgId, data, opts){
+    var svg = document.getElementById(svgId);
+    var vb = svg.viewBox.baseVal;
+    var W = vb.width, H = vb.height;
+    opts = opts || {};
+    var labelW = opts.labelW || 190;
+    var margin = {top:6, right:56, bottom:6, left:labelW};
+    var innerW = W - margin.left - margin.right;
+    var n = data.length;
+    var rowH = (H - margin.top - margin.bottom) / n;
+    var barH = Math.min(opts.maxBarH || 20, rowH*0.6);
+    var maxV = opts.max || Math.max.apply(null, data.map(function(d){return d.n;}));
+
+    data.forEach(function(d,i){
+      var cy = margin.top + rowH*i + rowH/2;
+      var w = Math.max((d.n/maxV)*innerW, 2);
+      var lab = el("text", {x:margin.left-10, y:cy+4, class:"cat-label", "text-anchor":"end"});
+      lab.textContent = d.label;
+      if (d.highlight) lab.setAttribute("font-weight","700");
+      svg.appendChild(lab);
+
+      var rect = el("rect", {
+        x:margin.left, y:cy-barH/2, width:w, height:barH, rx:4, ry:4,
+        class:"bar " + (d.highlight ? (opts.highlightCls||"fill-accent-2") : (opts.cls||"fill-accent"))
+      });
+      svg.appendChild(rect);
+      svg.appendChild(el("rect", {x:margin.left, y:cy-barH/2, width:4, height:barH, class:(d.highlight ? (opts.highlightCls||"fill-accent-2") : (opts.cls||"fill-accent"))}));
+
+      rect.addEventListener("mouseenter", function(evt){
+        showTT(evt, d.label, [["Buildings", comma(d.n)], ["Share of total", pct(d.n, opts.shareTotal||18312)]]);
+        rect.style.opacity=0.82;
+      });
+      rect.addEventListener("mousemove", moveTT);
+      rect.addEventListener("mouseleave", function(){ hideTT(); rect.style.opacity=1; });
+
+      var vlab = el("text", {x:margin.left+w+8, y:cy+4, class:"value-label"});
+      vlab.textContent = comma(d.n);
+      svg.appendChild(vlab);
+    });
+  }
+
+  /* ---------------------------------------------------------------
+     GROUPED VERTICAL BAR (2 series)
+  --------------------------------------------------------------- */
+  function renderGroupedChart(svgId, catLabels, seriesA, seriesB, opts){
+    var svg = document.getElementById(svgId);
+    var vb = svg.viewBox.baseVal;
+    var W = vb.width, H = vb.height;
+    opts = opts || {};
+    var margin = {top:14, right:14, bottom:30, left:50};
+    var innerW = W - margin.left - margin.right;
+    var innerH = H - margin.top - margin.bottom;
+    var maxV = Math.max.apply(null, seriesA.concat(seriesB).map(function(d){return d.n;}));
+    var niceMax = niceCeiling(maxV);
+    var n = catLabels.length;
+    var slot = innerW/n;
+    var gap = 3;
+    var barW = Math.min(26, (slot - gap*3)/2);
+
+    var ticks=4;
+    for (var i=0;i<=ticks;i++){
+      var v = niceMax*i/ticks;
+      var y = margin.top + innerH - (v/niceMax)*innerH;
+      svg.appendChild(el("line",{x1:margin.left,x2:margin.left+innerW,y1:y,y2:y,class:"axis-line"}));
+      var lab = el("text",{x:margin.left-8,y:y+3,class:"axis-label","text-anchor":"end"});
+      lab.textContent = compact(v);
+      svg.appendChild(lab);
+    }
+
+    catLabels.forEach(function(catLabel,i){
+      var groupCx = margin.left + slot*i + slot/2;
+      [ [seriesA[i], "fill-accent", -1], [seriesB[i], "fill-accent-2", 1] ].forEach(function(pair){
+        var d = pair[0], cls = pair[1], dir = pair[2];
+        var h = (d.n/niceMax)*innerH;
+        var y = margin.top+innerH-h;
+        var x = groupCx + dir*(gap/2+barW/2) - barW/2;
+        var rect = el("rect",{x:x,y:y,width:barW,height:Math.max(h,1.5),rx:3,ry:3,class:"bar "+cls});
+        svg.appendChild(rect);
+        if(h>3) svg.appendChild(el("rect",{x:x,y:margin.top+innerH-3,width:barW,height:3,class:cls}));
+        rect.addEventListener("mouseenter",function(evt){
+          showTT(evt, (dir<0?opts.aName:opts.bName)+" · "+catLabel, [["Buildings", comma(d.n)]]);
+          rect.style.opacity=0.82;
+        });
+        rect.addEventListener("mousemove", moveTT);
+        rect.addEventListener("mouseleave",function(){hideTT(); rect.style.opacity=1;});
+      });
+      var catlab = el("text",{x:groupCx,y:margin.top+innerH+18,class:"cat-label","text-anchor":"middle"});
+      catlab.textContent = catLabel;
+      svg.appendChild(catlab);
+    });
+  }
+
+  /* ---------------------------------------------------------------
+     LINE CHART (single series, markers)
+  --------------------------------------------------------------- */
+  function renderLineChart(svgId, data, opts){
+    var svg = document.getElementById(svgId);
+    var vb = svg.viewBox.baseVal;
+    var W = vb.width, H = vb.height;
+    opts = opts || {};
+    var margin = {top:20, right:20, bottom:34, left:52};
+    var innerW = W-margin.left-margin.right;
+    var innerH = H-margin.top-margin.bottom;
+    var vals = data.map(function(d){return d.v;});
+    var minV = opts.min !== undefined ? opts.min : Math.floor(Math.min.apply(null,vals)*0.9/100)*100;
+    var maxV = niceCeiling(Math.max.apply(null,vals)*1.05);
+    var n = data.length;
+    var stepX = innerW/(n-1);
+
+    var ticks=4;
+    for(var i=0;i<=ticks;i++){
+      var v = minV + (maxV-minV)*i/ticks;
+      var y = margin.top+innerH-((v-minV)/(maxV-minV))*innerH;
+      svg.appendChild(el("line",{x1:margin.left,x2:margin.left+innerW,y1:y,y2:y,class:"axis-line"}));
+      var lab = el("text",{x:margin.left-8,y:y+3,class:"axis-label","text-anchor":"end"});
+      lab.textContent = comma(v);
+      svg.appendChild(lab);
+    }
+
+    var pts = data.map(function(d,i){
+      var x = margin.left+stepX*i;
+      var y = margin.top+innerH-((d.v-minV)/(maxV-minV))*innerH;
+      return [x,y];
+    });
+
+    // area wash
+    var areaPath = "M"+pts[0][0]+","+(margin.top+innerH);
+    pts.forEach(function(p){ areaPath += " L"+p[0]+","+p[1]; });
+    areaPath += " L"+pts[pts.length-1][0]+","+(margin.top+innerH)+" Z";
+    svg.appendChild(el("path",{d:areaPath, fill:"var(--accent)", opacity:0.09, stroke:"none"}));
+
+    var linePath = "M"+pts.map(function(p){return p[0]+","+p[1];}).join(" L");
+    svg.appendChild(el("path",{d:linePath, fill:"none", class:"stroke-accent", "stroke-width":2, "stroke-linejoin":"round", "stroke-linecap":"round"}));
+
+    data.forEach(function(d,i){
+      var x=pts[i][0], y=pts[i][1];
+      var ring = el("circle",{cx:x,cy:y,r:5.5, fill:"var(--surface-2)"});
+      var dot = el("circle",{cx:x,cy:y,r:4, class:"fill-accent"});
+      svg.appendChild(ring); svg.appendChild(dot);
+      var hit = el("circle",{cx:x,cy:y,r:12, fill:"transparent", style:"cursor:pointer"});
+      svg.appendChild(hit);
+      hit.addEventListener("mouseenter",function(evt){ showTT(evt, d.label, [["Avg. size", comma(d.v)+" sq ft"]]); });
+      hit.addEventListener("mousemove", moveTT);
+      hit.addEventListener("mouseleave", hideTT);
+
+      var catlab = el("text",{x:x,y:margin.top+innerH+18,class:"cat-label","text-anchor":"middle"});
+      catlab.textContent = d.label;
+      svg.appendChild(catlab);
+    });
+
+    // end label
+    var last = data[data.length-1];
+    var lastPt = pts[pts.length-1];
+    var endlab = el("text",{x:lastPt[0], y:lastPt[1]-12, class:"value-label", "text-anchor":"middle", "font-weight":"700"});
+    endlab.textContent = comma(last.v)+" sf";
+    svg.appendChild(endlab);
+  }
+
+  /* ---------------------------------------------------------------
+     DONUT-LESS SHARE BARS (mix charts): ranked horizontal, categorical colors
+  --------------------------------------------------------------- */
+  function renderShareChart(svgId, data, totalKey, totalVal, valueFmt){
+    var svg = document.getElementById(svgId);
+    var vb = svg.viewBox.baseVal;
+    var W = vb.width, H = vb.height;
+    var labelW = 118;
+    var margin = {top:6, right:64, bottom:6, left:labelW};
+    var innerW = W-margin.left-margin.right;
+    var n = data.length;
+    var rowH = (H-margin.top-margin.bottom)/n;
+    var barH = Math.min(24, rowH*0.58);
+    var maxV = Math.max.apply(null, data.map(function(d){return d[totalKey];}));
+
+    data.forEach(function(d,i){
+      var cy = margin.top+rowH*i+rowH/2;
+      var val = d[totalKey];
+      var w = Math.max((val/maxV)*innerW,2);
+      var lab = el("text",{x:margin.left-10,y:cy+4,class:"cat-label","text-anchor":"end"});
+      lab.textContent = d.label;
+      svg.appendChild(lab);
+
+      var rect = el("rect",{x:margin.left,y:cy-barH/2,width:w,height:barH,rx:4,ry:4,class:"bar "+d.cls});
+      svg.appendChild(rect);
+      svg.appendChild(el("rect",{x:margin.left,y:cy-barH/2,width:4,height:barH,class:d.cls}));
+
+      rect.addEventListener("mouseenter",function(evt){
+        showTT(evt, d.label, [
+          [ totalKey==="count" ? "Buildings" : "Floor area", valueFmt(val) ],
+          ["Share of total", pct(val, totalVal)]
+        ]);
+        rect.style.opacity=0.82;
+      });
+      rect.addEventListener("mousemove", moveTT);
+      rect.addEventListener("mouseleave",function(){hideTT(); rect.style.opacity=1;});
+
+      var vlab = el("text",{x:margin.left+w+8,y:cy+4,class:"value-label"});
+      vlab.textContent = pct(val,totalVal);
+      svg.appendChild(vlab);
+    });
+  }
+
+  /* ---------------------------------------------------------------
+     RENDER
+  --------------------------------------------------------------- */
+  renderColumnChart("chart-decades", decades, {
+    cls:"fill-accent", labelRotate:true, directLabel:"all", valueLabel:"Buildings"
+  });
+
+  renderShareChart("chart-mix-count", propTypes, "count", 18312, function(v){return comma(v)+" buildings";});
+  renderShareChart("chart-mix-area", propTypes, "area", 29241174, function(v){return comma(v)+" sq ft";});
+
+  renderLineChart("chart-size-trend", sizeTrend, {});
+
+  var qualityColored = qualityDist.map(function(d,i){
+    var steps = ["seq-250","seq-300","seq-350","seq-400","seq-450","seq-500","seq-500","seq-550","seq-550","seq-600","seq-600","seq-650","seq-200"];
+    return {label:d.label, n:d.n, cls:null, styleVar: steps[i]};
+  });
+  renderColumnChart("chart-quality", qualityDist.map(function(d,i){
+    return {label:d.label, n:d.n, cls:"fill-accent"};
+  }), {labelRotate:true, maxBarW:30});
+  // recolor quality bars as an ordinal blue ramp
+  (function(){
+    var svg = document.getElementById("chart-quality");
+    var rects = svg.querySelectorAll("rect.bar");
+    var ramp = ["seq-250","seq-300","seq-350","seq-400","seq-450","seq-500","seq-500","seq-550","seq-550","seq-600","seq-600","seq-650","seq-200"];
+    rects.forEach(function(r,i){ r.setAttribute("fill","var(--"+ramp[i % ramp.length]+")"); r.removeAttribute("class"); r.setAttribute("class","bar"); });
+    svg.querySelectorAll("rect[data-basepatch]").forEach(function(r){
+      var i = +r.getAttribute("data-basepatch");
+      r.setAttribute("fill","var(--"+ramp[i % ramp.length]+")"); r.removeAttribute("class");
+    });
+  })();
+
+  renderColumnChart("chart-condition", conditionDist, {labelRotate:true, maxBarW:34});
+  (function(){
+    var svg = document.getElementById("chart-condition");
+    var rects = svg.querySelectorAll("rect.bar");
+    var ramp = ["or-200","or-300","or-400","or-500","or-500","or-600","or-700","or-200"];
+    rects.forEach(function(r,i){ r.setAttribute("fill","var(--"+ramp[i % ramp.length]+")"); r.removeAttribute("class"); r.setAttribute("class","bar"); });
+    svg.querySelectorAll("rect[data-basepatch]").forEach(function(r){
+      var i = +r.getAttribute("data-basepatch");
+      r.setAttribute("fill","var(--"+ramp[i % ramp.length]+")"); r.removeAttribute("class");
+    });
+  })();
+
+  renderGroupedChart("chart-bedbath",
+    bedrooms.map(function(d){return d.label;}),
+    bedrooms, bathrooms,
+    {aName:"Bedrooms", bName:"Bathrooms"}
+  );
+  document.getElementById("legend-bedbath").innerHTML =
+    '<div class="legend-item"><span class="legend-swatch" style="background:var(--accent)"></span>Bedrooms</div>'+
+    '<div class="legend-item"><span class="legend-swatch" style="background:var(--accent-2)"></span>Bathrooms</div>';
+
+  var occSorted = occupancy.slice().sort(function(a,b){return b.n-a.n;});
+  renderHBarChart("chart-occupancy", occSorted, {labelW:250, maxBarH:22, highlightCls:"fill-accent-2"});
+
+  /* ---------------------------------------------------------------
+     PROFILE TABLE
+  --------------------------------------------------------------- */
+  var tbody = document.querySelector("#profile-table tbody");
+  propTypes.forEach(function(d){
+    var tr = document.createElement("tr");
+    tr.innerHTML =
+      '<td><span class="swatch" style="background:var('+colorVar(d.cls)+')"></span>'+d.label+'</td>'+
+      '<td class="num">'+comma(d.count)+'</td>'+
+      '<td class="num">'+pct(d.count,18312)+'</td>'+
+      '<td class="num">'+comma(d.area)+'</td>'+
+      '<td class="num">'+comma(d.avgSize)+'</td>'+
+      '<td class="num">'+(d.beds===null?'—':d.beds)+'</td>'+
+      '<td class="num">'+(d.baths===null?'—':d.baths)+'</td>'+
+      '<td class="num">'+d.stories+'</td>'+
+      '<td class="num">'+d.year+'</td>';
+    tbody.appendChild(tr);
+  });
+  function colorVar(cls){
+    return {"fill-accent":"--accent","fill-accent-2":"--accent-2","fill-accent-3":"--accent-3",
+            "fill-accent-4":"--accent-4","fill-accent-5":"--accent-5","fill-accent-6":"--accent-6"}[cls] || "--accent";
+  }
+
+})();
+</script>
+</body>
+</html>
